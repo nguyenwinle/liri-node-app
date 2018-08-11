@@ -2,10 +2,16 @@ require("dotenv").config();
 
 // Add the code required to import the keys.js file and store it in a variable.
 
-var spotify = new Spotify(keys.spotify);
-var client = new Twitter(keys.twitter);
+// Node module imports needed to run the functions
+var fs = require("fs"); //reads and writes files
+var request = require("request");
+var keys = require("./keys.js");
+var twitter = require("twitter");
+var spotify = require ("spotify");
+var command = process.argv[2];
+var name = process.argv[3];
 
-var command = process.argv2[2];
+// Include the request npm package (Don't forget to run "npm install request" in this folder first!)
 
 // Make it so liri.js can take in one of the following commands:
 
@@ -17,7 +23,7 @@ var command = process.argv2[2];
 
 // * `do-what-it-says`
 if (command === "movie-this"){
-    moviethis();
+    moviethis(name);
 }
 if (command === "my-tweets"){
     mytweets();
@@ -29,10 +35,6 @@ if (command === "do-what-it-says"){
     doWhatItSays();
 }
 
-function mytweets(){
-    // This will show your last 20 tweets and when they were created at in your terminal/bash window.
-    
-}
 
 function spotify(song_name){
     // This will show the following information about the song in your terminal/bash window
@@ -52,8 +54,34 @@ function moviethis(movie_name){
     // You'll use the request package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use trilogy.
 
 //     This will output the following information to your terminal/bash window:
+  
+    //  If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
+    
+    
+    //  If you haven't watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/
+    
+    //  It's on Netflix!
+    // Include the request npm package (Don't forget to run "npm install request" in this folder first!)
 
-//     * Title of the movie.
+    // Then run a request to the OMDB API with the movie specified
+    request("http://www.omdbapi.com/?t=" + movie_name + "&y=&plot=short&apikey=trilogy", function(error, response) {
+
+    // If the request is successful (i.e. if the response status code is 200)
+    if (!error && response.statusCode === 200) {
+        var responseMovie = JSON.parse(response.body);
+        console.log(responseMovie);
+        
+        // Parse the body of the site and recover just the imdbRating
+        // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
+        console.log("Title: " + responseMovie.Title);
+        console.log("Release Date: " + responseMovie.Released);
+        console.log("Country: " + responseMovie.Country);
+        console.log("Producer: " + responseMovie.Director);
+        console.log("Plot: " + responseMovie.Plot);
+        console.log("Language: " + responseMovie.Language);
+        console.log("Rotten Tomatoes: " + responseMovie.Ratings[1].Value);
+        console.log("The movie's rating is: " + responseMovie.imdbRating);
+        //     * Title of the movie.
 //     * Year the movie came out.
 //     * IMDB Rating of the movie.
 //     * Rotten Tomatoes Rating of the movie.
@@ -61,14 +89,11 @@ function moviethis(movie_name){
 //     * Language of the movie.
 //     * Plot of the movie.
 //     * Actors in the movie.
- 
- 
-    //  If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-    
-    
-    //  If you haven't watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/
-    
-    //  It's on Netflix!
+    }
+
+
+});
+
  
  
  
