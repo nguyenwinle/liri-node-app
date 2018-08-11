@@ -1,15 +1,32 @@
-require("dotenv").config();
 
-// Add the code required to import the keys.js file and store it in a variable.
-
-// Node module imports needed to run the functions
-var fs = require("fs"); //reads and writes files
-var request = require("request");
 var keys = require("./keys.js");
-var twitter = require("twitter");
-var spotify = require ("spotify");
-var command = process.argv[2];
-var name = process.argv[3];
+
+var request = require('request');
+var Twitter = require('twitter');
+var Spotify = require('node-spotify-api');
+var fs = require('fs');
+var client = new Twitter(keys.twitterKeys);
+var input = process.argv;
+var action = input[2];
+var inputs = input[3];
+
+switch (action) {
+	case "my-tweets":
+	twitter(inputs);
+	break;
+
+	case "spotify-this-song":
+	spotify(inputs);
+	break;
+
+	case "movie-this":
+	movie(inputs);
+	break;
+
+	case "do-what-it-says":
+	doit();
+	break;
+};
 
 // Include the request npm package (Don't forget to run "npm install request" in this folder first!)
 
