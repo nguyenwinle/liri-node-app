@@ -5,7 +5,7 @@ var request = require('request');
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 var fs = require('fs');
-var client = new Twitter(keys.twitterKeys);
+var client = new Twitter(keys.twitter);
 var input = process.argv;
 var action = input[2];
 var inputs = input[3];
@@ -28,43 +28,39 @@ switch (action) {
 	break;
 };
 
-// Include the request npm package (Don't forget to run "npm install request" in this folder first!)
+function twitter(inputs) {
+	var params = {screen_name: inputs, count: 20};
+	
+		client.get('statuses/user_timeline', params, function(error, tweets, response) {
+			if (!error) {
+				for (i = 0; i < tweets.length; i ++){
+					console.log("Tweet: " + "'" + tweets[i].text + "'" + " Created At: " + tweets[i].created_at);
+				}
+			} else {
+				console.log(error);
+			}
+		});
 
-// Make it so liri.js can take in one of the following commands:
-
-// * `my-tweets`
-
-// * `spotify-this-song`
-
-// * `movie-this`
-
-// * `do-what-it-says`
-if (command === "movie-this"){
-    moviethis(name);
-}
-if (command === "my-tweets"){
-    mytweets();
-}
-if (command === "spotify-this-song"){
-    spotify();
-}
-if (command === "do-what-it-says"){
-    doWhatItSays();
 }
 
+function spotify(inputs) {
 
-function spotify(song_name){
-    // This will show the following information about the song in your terminal/bash window
+	var spotify = new Spotify(keys.spotify);
+		if (!inputs){
+        	inputs = 'The Weeknd';
+    	}
+		spotify.search({ type: 'track', query: inputs }, function(err, data) {
+			if (err){
+	            console.log('Error occurred: ' + err);
+	            return;
+	        }
 
-    // Artist(s)
-    // The song's name
-    // A preview link of the song from Spotify
-    // The album that the song is from
-
-
-    // If no song is provided then your program will default to "The Sign" by Ace of Base.
-    // You will utilize the node-spotify-api package in order to retrieve song information from the Spotify API.
-
+	        var songInfo = data.tracks.items;
+	        console.log("Artist(s): " + songInfo[0].artists[0].name);
+	        console.log("Song Name: " + songInfo[0].name);
+	        console.log("Preview Link: " + songInfo[0].preview_url);
+	        console.log("Album: " + songInfo[0].album.name);
+	});
 }
 
 function moviethis(movie_name){
@@ -117,6 +113,24 @@ function moviethis(movie_name){
 }
 
 function doWhatItSays(){
-    // It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
-    // Feel free to change the text in that document to test out the feature for other commands.
+        
+    fs.readFile('random.txt', "utf8", function(error, data){
+
+		if (error) {
+    		return console.log(error);
+  		}
+		var dataArr = data.split(",");
+
+		if (dataArr[0] === "spotify-this-song") {
+			var check = dataArr[1].slice(1, -1);
+			spotify(check);
+		} else if (dataArr[0] === "my-tweets") {
+			var tweetname = dataArr[1].slice(1, -1);
+			twitter(tweetname);
+		} else if(dataArr[0] === "movie-this") {
+			var movie_name = dataArr[1].slice(1, -1);
+			movie(movie_name);
+		} 
+		
+  	});
 }
