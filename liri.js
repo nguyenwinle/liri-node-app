@@ -1,14 +1,12 @@
 
 var keys = require("./keys.js");
-
 var request = require('request');
 var Twitter = require('twitter');
 var Spotify = require('node-spotify-api');
 var fs = require('fs');
 var client = new Twitter(keys.twitter);
-var input = process.argv;
-var action = input[2];
-var inputs = input[3];
+var action = process.argv[2];
+var inputs = process.argv[3];
 
 switch (action) {
 	case "my-tweets":
@@ -40,7 +38,6 @@ function twitter(inputs) {
 				console.log(error);
 			}
 		});
-
 }
 
 function spotify(inputs) {
@@ -55,11 +52,11 @@ function spotify(inputs) {
 	            return;
 	        }
 
-	        var songInfo = data.tracks.items;
-	        console.log("Artist(s): " + songInfo[0].artists[0].name);
-	        console.log("Song Name: " + songInfo[0].name);
-	        console.log("Preview Link: " + songInfo[0].preview_url);
-	        console.log("Album: " + songInfo[0].album.name);
+	        var song = data.tracks.items;
+	        console.log("Artist(s): " + song[0].artists[0].name);
+	        console.log("Song Name: " + song[0].name);
+	        console.log("Preview Link: " + song[0].preview_url);
+	        console.log("Album: " + song[0].album.name);
 	});
 }
 
